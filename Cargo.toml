@@ -1,0 +1,12 @@
+[package]
+name = "emusense"
+version = "0.1.0"
+authors = ["Jakub Konka <kubkon@jakubkonka.com>"]
+
+[dependencies]
+time = "*"
+rand = "*"
+csv = "*"
+rustc-serialize = "*"
+byte_conv = "*"
+docopt = "*"
