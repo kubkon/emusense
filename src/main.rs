@@ -34,7 +34,7 @@ fn main() {
     // Parse command line arguments
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     // Generate fake readings
-    // Reading( u16, i16, i16, i16 )
+    // Reading( u32, i16, i16, i16 )
     let readings = reading::gen_readings(args.arg_num_readings, args.flag_rate);
     println!("Generated {} readings", args.arg_num_readings);
     // Save to CSV file

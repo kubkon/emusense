@@ -9,11 +9,13 @@ formats.
 The utility can be invoked as follows:
 
 ```
-emusense <num-readings>
+emusense <num-readings> [--rate=<hz>]
 ```
 
 where `num-readings` specifies how many readings (rows in CSV) should be
-generated.
+generated, and `rate` is an optional argument that specifies the sampling rate
+in Hz. *NOTE:* it is assumed that the minimum time increment is 1ms; hence,
+`rate` should not exceed 1000Hz.
 
 ## Building and testing
 
