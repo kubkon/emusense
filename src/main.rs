@@ -1,5 +1,4 @@
 extern crate csv;
-extern crate time;
 extern crate rand;
 extern crate rustc_serialize;
 extern crate byte_conv;
@@ -15,26 +14,28 @@ EMUSENSE is a utility program that generates fake sensor data and
 saves it as both CSV and binary (.pps) file formats.
 
 Usage:
-    emusense <num-readings>
+    emusense <num-readings> [--rate=<hz>]
     emusense (-h | --help)
     emusense --version
 
 Options:
-    -h --help   Prints this message.
-    --version   Prints version.
+    -h --help       Prints this message.
+    --version       Prints version.
+    --rate=<hz>     Sampling rate in Hz [default: 10].
 ";
 
 #[derive(Debug,RustcDecodable)]
 struct Args {
     arg_num_readings: usize,
+    flag_rate: usize,
 }
 
 fn main() {
     // Parse command line arguments
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     // Generate fake readings
-    // Reading( u64, i16, i16, i16 )
-    let readings = reading::gen_readings(args.arg_num_readings);
+    // Reading( u16, i16, i16, i16 )
+    let readings = reading::gen_readings(args.arg_num_readings, args.flag_rate);
     println!("Generated {} readings", args.arg_num_readings);
     // Save to CSV file
     println!("Saving as CSV...");
