@@ -9,13 +9,20 @@ formats.
 The utility can be invoked as follows:
 
 ```
-emusense <num-readings> [--rate=<hz>]
+emusense <num-readings> [--num-values=<n>, --rate=<hz>]
 ```
 
 where `num-readings` specifies how many readings (rows in CSV) should be
-generated, and `rate` is an optional argument that specifies the sampling rate
-in Hz. *NOTE:* it is assumed that the minimum time increment is 1ms; hence,
-`rate` should not exceed 1000Hz.
+generated, `num-values` is an optional argument that specifies the number of
+sensor values per row (measurement), and `rate` is an optional argument that
+specifies the sampling rate in Hz.
+
+*Defaults:*
++ `num-values`: 26, each 2-byte long signed integer
++ `rate`: 10kHz
+
+*NOTE:* it is assumed that the minimum time increment is 1us; hence,
+`rate` should not exceed 1MHz.
 
 ## Building and testing
 

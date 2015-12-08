@@ -3,38 +3,34 @@ use ::byte_conv::{As as AsBytes};
 
 #[derive(Debug,Clone,RustcEncodable)]
 pub struct Reading {
-    timestamp: u32,
-    x: i16,
-    y: i16,
-    z: i16,
+    timestamp: u64,
+    values: Vec<i16>,
 }
 
 impl Reading {
-    pub fn new(ts: u32, x: i16, y: i16, z: i16) -> Reading {
-        Reading { timestamp: ts, x: x, y: y, z: z }
+    pub fn new(ts: u64, values: &[i16]) -> Reading {
+        Reading { timestamp: ts, values: Vec::from(values) }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut bytes = Vec::from(self.timestamp.as_bytes());
-        bytes.extend(self.x.as_bytes());
-        bytes.extend(self.y.as_bytes());
-        bytes.extend(self.z.as_bytes());
+        for v in &self.values {
+            bytes.extend(v.as_bytes());
+        }
         bytes
     }
 }
 
-pub fn gen_readings(num: usize, rate: usize) -> Vec<Reading> {
+pub fn gen_readings(num_readings: usize, num_values: usize, rate: usize) -> Vec<Reading> {
     let mut readings = vec![];
     let range = Range::new(-4000i16, 4000i16);
     let mut rng = ::rand::thread_rng();
-    let time_int = ((1f32 / rate as f32) * 1e3f32) as u32;
+    let time_int = ((1f64 / rate as f64) * 1e6f64) as u64;
 
-    for i in 0..num {
+    for i in 0..num_readings {
         let reading = Reading::new(
-            i as u32 * time_int,
-            range.ind_sample(&mut rng),
-            range.ind_sample(&mut rng),
-            range.ind_sample(&mut rng)
+            i as u64 * time_int,
+            &(0..num_values).map(|_| range.ind_sample(&mut rng)).collect::<Vec<i16>>()
         );
         readings.push(reading);
     }
