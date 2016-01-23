@@ -8,6 +8,7 @@ mod reading;
 
 use std::io::Write;
 use docopt::Docopt;
+use std::f32::consts::PI;
 
 const USAGE: &'static str = "
 EMUSENSE is a utility program that generates fake sensor data and
@@ -37,7 +38,16 @@ fn main() {
     let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
     // Generate fake readings
     // Reading( u64, Vec<i16> )
-    let readings = reading::gen_readings(args.arg_num_readings, args.flag_num_values, args.flag_rate);
+    let rate = args.flag_rate;
+    let sine_wave = |x: f32| {
+        let y = (2.0f32 * PI * x / rate as f32).sin();
+        (y * rate as f32).floor() as i16
+    };
+    let readings = reading::gen_readings(
+        args.arg_num_readings,
+        args.flag_num_values,
+        rate,
+        sine_wave);
     println!("Generated {} readings", args.arg_num_readings);
     // Save to CSV file
     println!("Saving as CSV...");

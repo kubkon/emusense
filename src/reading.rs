@@ -1,4 +1,3 @@
-use ::rand::distributions::{IndependentSample, Range};
 use ::byte_conv::{As as AsBytes};
 
 #[derive(Debug,Clone,RustcEncodable)]
@@ -21,16 +20,21 @@ impl Reading {
     }
 }
 
-pub fn gen_readings(num_readings: usize, num_values: usize, rate: usize) -> Vec<Reading> {
+pub fn gen_readings<F>(
+    num_readings: usize,
+    num_values: usize,
+    rate: usize,
+    f: F) -> Vec<Reading> where
+    F: Fn(f32) -> i16 {
     let mut readings = vec![];
-    let range = Range::new(-4000i16, 4000i16);
-    let mut rng = ::rand::thread_rng();
     let time_int = ((1f64 / rate as f64) * 1e6f64) as u64;
 
     for i in 0..num_readings {
         let reading = Reading::new(
             i as u64 * time_int,
-            &(0..num_values).map(|_| range.ind_sample(&mut rng)).collect::<Vec<i16>>()
+            &(0..num_values).map(|j| {
+                f((i * num_values + j) as f32)
+            }).collect::<Vec<i16>>()
         );
         readings.push(reading);
     }
