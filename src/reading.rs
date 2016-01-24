@@ -1,4 +1,4 @@
-use ::byte_conv::{As as AsBytes};
+use std::mem::transmute;
 
 #[derive(Debug,Clone,RustcEncodable)]
 pub struct Reading {
@@ -12,9 +12,12 @@ impl Reading {
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut bytes = Vec::from(self.timestamp.as_bytes());
+        let mut bytes: Vec<u8> = vec![];
+        let ts_bytes = unsafe { transmute::<u64, [u8; 8]>(self.timestamp) };
+        bytes.extend(&ts_bytes);
         for v in &self.values {
-            bytes.extend(v.as_bytes());
+            let v_bytes = unsafe { transmute::<i16, [u8; 2]>(*v) };
+            bytes.extend(&v_bytes);
         }
         bytes
     }
@@ -48,4 +51,16 @@ pub fn readings_to_bytes(readings: &Vec<Reading>) -> Vec<u8> {
         bytes.extend(r.to_bytes());
     }
     bytes
+}
+
+#[test]
+fn test_reading_to_bytes() {
+    let reading = Reading::new(
+        100,
+        &[-32768, 32767, 0]
+    );
+    let bytes = reading.to_bytes();
+    assert!(bytes == vec![
+        100u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
+        0u8, 128u8, 255u8, 127u8, 0u8, 0u8]);
 }

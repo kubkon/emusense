@@ -1,7 +1,5 @@
 extern crate csv;
-extern crate rand;
 extern crate rustc_serialize;
-extern crate byte_conv;
 extern crate docopt;
 
 mod reading;
